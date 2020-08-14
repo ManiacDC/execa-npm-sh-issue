@@ -4,44 +4,35 @@ Pre-requisites:
 npm install
 ```
 
-Then open two PowerShell windows. 
+Open a Git Bash window
 
-First start in new Powershell window the test.js:
+note that script-shell in .npmrc is set to "sh"
 
-```powershell
-node .\test.js
-```
-
-Then in second window, observe that tsc is running:
-
-```powershell
-Get-CIMInstance -ClassName Win32_Process | Where-Object {$_.CommandLine -like "*node.exe*tsc*"} | Select-Object ProcessID, CommandLine
-```
+Run the following script:
 
 ```
-ProcessID CommandLine
---------- -----------
-    23624 "C:\Copies\Node\\node.exe"   "C:\Copies\Node\\node_modules\typescript\bin\tsc" --noEmit --watch
+./launch.sh
 ```
 
-Then send Ctrl+C to first window and notice that test.js is killed.
+OR run:
 
-Then try this again:
-
-```powershell
-Get-CIMInstance -ClassName Win32_Process | Where-Object {$_.CommandLine -like "*node.exe*tsc*"} | Select-Object ProcessID, CommandLine
+```
+node ./test.js
 ```
 
-Notice that same process is still running, you should get:
+(Both should result in the same issue occurring)
 
-```powershell
-ProcessID CommandLine
---------- -----------
-    23624 "C:\Copies\Node\\node.exe"   "C:\Copies\Node\\node_modules\typescript\bin\tsc" --noEmit --watch
-```
+Verify in Process Explorer or Task Manager that node.exe is running
 
-Now you must stop it forcefully:
+Then send Ctrl+C to the Git Bash Window and the process will terminate
 
-```powershell
-Stop-Process 23624
-```
+Verify in Process Exporer or Task Manager that node.exe remains running and must be killed manually.
+
+
+The results vary based on the shell being used by npm (script-shell in .npmrc) and the shell used to launch the node script. See the table below for reference
+
+|                      | sh   | bash | powershell | <blank= default to cmd> |
+|----------------------|------|------|------------|-------------------------|
+| ./launch.sh          | fail | fail | pass       | pass                    |
+| node test.js         | fail | fail | fail       | fail                    |
+| sh -c 'node test.js' | fail | fail | pass       | pass                    |
